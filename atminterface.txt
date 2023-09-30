@@ -1,0 +1,161 @@
+
+package atminterface;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+
+class MyFrame extends JFrame implements ActionListener
+{
+    JButton w,d,c,e;
+    JTextField amnt,pinno;
+    JPanel p;
+    JLabel l;
+   double  accountbalance=1000;
+   int pinnor=1345;
+   JTextArea displayArea;
+   JPanel buttonPanel;
+   JPanel textPanel;
+  JLabel labelAboveTextFields;
+   
+    
+    MyFrame(){
+        
+        super("ATM Interface");
+        
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BorderLayout());
+        l = new JLabel("Welcome to ATM X");
+        l.setHorizontalAlignment(SwingConstants.CENTER);
+  
+        contentPanel.add(l, BorderLayout.NORTH);
+         
+        
+        p=new JPanel();
+        p.setLayout(new GridLayout(2, 1));
+       
+        buttonPanel = new JPanel(new GridLayout(2, 2));
+        w=new JButton("Withdraw");
+        d=new JButton("Deposit");
+        c=new JButton("check balance");
+        e=new JButton("exit");
+       
+        buttonPanel.add(w);
+        buttonPanel.add(d);
+        buttonPanel.add(c);
+        buttonPanel.add(e);
+        
+        textPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for textPanel
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5); // Add some padding
+
+        labelAboveTextFields = new JLabel("Enter Amount and PIN:");
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        textPanel.add(labelAboveTextFields, gbc);
+
+        amnt = new JTextField(10);
+        pinno = new JTextField( 10);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        textPanel.add(new JLabel("Amount:"), gbc);
+        gbc.gridx = 1;
+        textPanel.add(amnt, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        textPanel.add(new JLabel("PIN:"), gbc);
+        gbc.gridx = 1;
+        textPanel.add(pinno, gbc);
+      
+        
+        displayArea = new JTextArea(10, 40);
+        displayArea.setEditable(false);
+        
+        JPanel inputWrapperPanel = new JPanel();
+        inputWrapperPanel.setLayout(new BoxLayout(inputWrapperPanel, BoxLayout.Y_AXIS));
+        inputWrapperPanel.add(textPanel);
+        inputWrapperPanel.add(buttonPanel);
+
+        p.add(inputWrapperPanel); 
+        
+        contentPanel.add(p, BorderLayout.CENTER);
+        contentPanel.add(new JScrollPane(displayArea), BorderLayout.SOUTH);
+
+
+        add(contentPanel);
+        w.addActionListener(this);
+        d.addActionListener(this);
+        c.addActionListener(this);
+        e.addActionListener(this);
+        
+        
+        
+}public void actionPerformed(ActionEvent e) {
+        
+    int correctPin = 1345; 
+    if (e.getSource() == w || e.getSource() == d || e.getSource() == c) {
+        
+        try{
+            int enteredPin = Integer.parseInt(JOptionPane.showInputDialog("Enter your PIN:"));
+            if (enteredPin == correctPin) {
+                // PIN is correct, proceed with the transaction
+                if (e.getSource() == w) {
+                     
+            try { 
+            
+               double amountToWithdraw = Double.parseDouble(amnt.getText());
+               if (amountToWithdraw <= accountbalance) {
+                accountbalance -= amountToWithdraw;
+                displayArea.append("Withdrawal Successful. New Balance: " + accountbalance + "\n");
+            } else {
+                displayArea.append("Insufficient Funds!\n");
+            }
+        } catch (NumberFormatException ex) {
+            displayArea.append("Invalid amount\n");
+        }
+     }else if (e.getSource() == d) {
+       try {
+            double amountToDeposit = Double.parseDouble(amnt.getText());
+            if (amountToDeposit > 0) {
+                accountbalance += amountToDeposit;
+                displayArea.append("Deposit Successful. New Balance: " + accountbalance + "\n");
+            } else {
+                displayArea.append("Invalid amount to deposit\n");
+            }
+        } catch (NumberFormatException ex) {
+            displayArea.append("Invalid amount\n");
+        }
+      } else if (e.getSource() == c) {
+          displayArea.append("Current Balance: " + accountbalance + "\n");
+        }
+    }else{
+         displayArea.append( "Incorrect PIN. Transaction aborted.");
+     }
+    }catch (NumberFormatException ex) {
+            displayArea.append( "Invalid PIN format. Please enter a valid PIN.");}
+    } else if (e.getSource() == this.e) {
+        System.exit(0);
+    }
+}
+
+
+
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                MyFrame f = new MyFrame();
+                f.setSize(500, 500);
+                f.setVisible(true);
+            }
+        });
+    }
+}
+
+       
+    
+
+
+
